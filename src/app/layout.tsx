@@ -22,6 +22,9 @@ export default function RootLayout({
       <body>
         {children}
       </body>
+      <footer>
+      <p className="text-center text-gray-200">© 2025 Breno Leonel - Todos os direitos reservados</p>
+      </footer>
     </html>
   );
 }
