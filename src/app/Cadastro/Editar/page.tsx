@@ -1,12 +1,12 @@
-// import FormAluno from "@/components/FormAluno";
+import FormAluno from "@/components/FormAlunoAtualizar";
 
-// export default function Editar() {
-//   return(
-//     <div className="h-screen flex items-center justify-center bg-gray-100">
-//       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-//         <h1 className="text-2xl font-bold mb-6 text-center">Ficha de Aluno</h1>
-//         <FormAluno />
-//       </div>
-//     </div>
-//   )
-// }
+export default function Cadastro() {
+  return(
+    <div className="h-screen flex items-center justify-center bg-slate-700">
+      <div className="bg-slate-300 p-6 rounded-lg shadow-lg max-w-2xl w-full">
+        {/* <h1 className="text-2xl font-bold mb-6 text-center">Ficha de Cadastro</h1> */}
+        <FormAluno />
+      </div>
+    </div>
+  )
+}

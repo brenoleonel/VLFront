@@ -1,4 +1,4 @@
-import FormAluno from "@/components/FormAluno";
+import FormAluno from "@/components/FormAlunoCadastro";
 
 export default function Cadastro() {
   return(
