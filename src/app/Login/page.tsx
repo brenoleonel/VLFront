@@ -4,25 +4,30 @@ import { api } from "@/utils/api";
 import { useRouter } from "next/navigation";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [Email, setEmail] = useState("");
+  const [Senha, setSenha] = useState("");
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const resposta = await api.post<{ token: string }>("/user-admin/login", { email, senha });
+      const resposta = await api.post<{ token: string; user: { id: string; nome: string; email: string; senha: string } }>(
+        "/user-admin/login",
+        { Email, Senha }
+      );
 
-      if (resposta.data.token) {
-        sessionStorage.setItem("token", resposta.data.token); // 🔄 Usando sessionStorage ao invés de localStorage
+      const { token, user } = resposta.data || resposta;
+
+      if (token) {
+        sessionStorage.setItem("token", token);
         router.push("/Cadastro/Listar");
       } else {
         alert("Credenciais inválidas");
       }
 
     } catch (error: any) {
-      alert(error.response?.data?.message || "Erro ao fazer login"); // 🔄 Mostra mensagem real do backend
+      alert(error.response?.data?.message || "Erro ao fazer login");
     }
   };
 
@@ -37,7 +42,7 @@ const Login = () => {
             <input
               type="email"
               id="email"
-              value={email}
+              value={Email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full border border-gray-700 text-gray-900 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Digite seu email"
@@ -50,7 +55,7 @@ const Login = () => {
             <input
               type="password"
               id="password"
-              value={senha}
+              value={Senha}
               onChange={(e) => setSenha(e.target.value)}
               className="w-full border border-gray-700 text-gray-900 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Digite sua senha"

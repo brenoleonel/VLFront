@@ -10,7 +10,7 @@ export const useAuth = () => {
     const token = sessionStorage.getItem("token");
 
     if (!token) {
-      router.push("/")
+      router.push("/not-found");
     }
   }, []);
 };

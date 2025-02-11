@@ -1,3 +1,4 @@
+"use client"
 import FormAluno from "@/components/FormAlunoCadastro";
 import { useAuth } from "@/utils/useAuth";
 

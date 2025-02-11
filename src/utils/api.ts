@@ -9,18 +9,23 @@ interface ApiResponse<T> {
 async function apiRequest<T>(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
-  data?: unknown
+  data?: unknown,
+  headers: Record<string, string> = {}
 ): Promise<ApiResponse<T>> {
   try {
+    const token = sessionStorage.getItem("token");
+
     const config: RequestInit = {
       method,
       headers: {
         "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers,
       },
     };
 
     if (method !== "GET" && data) {
-      console.log("Dados enviados:", data); // Verifique o payload
+      console.log("Dados enviados:", data);
       config.body = JSON.stringify(data);
     }
 
