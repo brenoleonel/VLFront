@@ -1,58 +1,56 @@
 "use client";
 import { api } from "@/utils/api";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface AlunoData {
-  curso: string;
-  nome: string;
-  cpf: string;
-  email: string;
-  endereco: string;
-  numero: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  celular1: string;
-  celular2: string;
-  celular3: string;
+  id: string;
+  Escola: string;
+  Curso: string;
+  Nome: string;
+  Cpf: string;
+  Email: string;
+  Endereco: string;
+  Numero: string;
+  Bairro: string;
+  Cidade: string;
+  Estado: string;
+  Celular1: string;
+  Celular2: string;
+  Celular3: string;
+  userAdmId: string;
+  PublicId?: string;
+  createdAt?: string;
 }
 
-export default function FormAlunoAtualizar() {
+interface FormAlunoAtualizarProps {
+  alunoId: string;
+  onClose: () => void;
+}
+
+export default function FormAlunoAtualizar({ alunoId, onClose  }: FormAlunoAtualizarProps) {
   const [formData, setFormData] = useState<AlunoData>({
-    curso: "",
-    nome: "",
-    cpf: "",
-    email: "",
-    endereco: "",
-    numero: "",
-    bairro: "",
-    cidade: "",
-    estado: "",
-    celular1: "",
-    celular2: "",
-    celular3: "",
+    id: "",
+    Escola: "",
+    Curso: "",
+    Nome: "",
+    Cpf: "",
+    Email: "",
+    Endereco: "",
+    Numero: "",
+    Bairro: "",
+    Cidade: "",
+    Estado: "",
+    Celular1: "",
+    Celular2: "",
+    Celular3: "",
+    userAdmId: "",
+    PublicId: "",
+    createdAt: ""
   });
 
-  const searchParams = useSearchParams();
-  const alunoId = searchParams.get("id");
-
-  useEffect(() => {
-    const fetchAluno = async () => {
-      if (alunoId) {
-        try {
-          const response = await api.get<AlunoData>(`/alunos/${alunoId}`);
-          setFormData(response.data);
-        } catch (error) {
-          console.error("Erro ao buscar dados do aluno:", error);
-        }
-      }
-    };
-    fetchAluno();
-  }, [alunoId]);
-
   const formatCPF = (value: string) => {
-    return value.replace(/\D/g, "")
+    return value.replace(/\D/g, "") 
                 .replace(/(\d{3})(\d)/, "$1.$2")
                 .replace(/(\d{3})(\d)/, "$1.$2")
                 .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
@@ -65,11 +63,38 @@ export default function FormAlunoAtualizar() {
                 .slice(0, 15);
   };
 
+  const router = useRouter(); // 🚀 Criando a instância do router
+
+  useEffect(() => {
+    const fetchAluno = async () => {
+      if (alunoId) {
+        try {
+          const response = await api.get<{ message: string; Aluno: AlunoData }>(`/alunos/${alunoId}`);
+          setFormData((prevData) => ({
+            ...prevData,
+            ...response.data.Aluno,
+          }));
+        } catch (error) {
+          console.error("Erro ao buscar dados do aluno:", error);
+        }
+      }
+    };
+    fetchAluno();
+  }, [alunoId]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
+    const { name, value } = e.target;
+    let formattedValue = value;
+  
+    if (name === "Cpf") {
+      formattedValue = formatCPF(value);
+    } else if (name === "Celular1" || name === "Celular2" || name === "Celular3") {
+      formattedValue = formatPhone(value);
+    }
+  
     setFormData((prevData) => ({
       ...prevData,
-      [id]: id === "cpf" ? formatCPF(value) : id.startsWith("celular") ? formatPhone(value) : value,
+      [name]: formattedValue ?? "",
     }));
   };
 
@@ -77,8 +102,13 @@ export default function FormAlunoAtualizar() {
     e.preventDefault();
     if (alunoId) {
       try {
-        await api.put(`/alunos/${alunoId}`, formData);
+        const { id, PublicId, createdAt, ...dataToSend } = formData;
+  
+        await api.put(`/alunos/${alunoId}`, dataToSend);
         alert("Cadastro atualizado com sucesso!");
+        
+        onClose();
+
       } catch (error) {
         console.error("Erro ao atualizar cadastro:", error);
       }
@@ -88,62 +118,21 @@ export default function FormAlunoAtualizar() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-lg max-w-xl mx-auto">
       <h2 className="text-2xl font-bold text-slate-950 text-center mb-4">Atualizar Aluno</h2>
-
-      <div>
-        <label htmlFor="curso" className="block text-gray-700">Curso</label>
-        <input type="text" id="curso" value={formData.curso} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-      </div>
-
-      <div>
-        <label htmlFor="nome" className="block text-gray-700">Nome</label>
-        <input type="text" id="nome" value={formData.nome} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-      </div>
-
-      <div>
-        <label htmlFor="cpf" className="block text-gray-700">CPF</label>
-        <input type="text" id="cpf" value={formData.cpf} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-      </div>
-
-      <div>
-        <label htmlFor="email" className="block text-gray-700">Email</label>
-        <input type="email" id="email" value={formData.email} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-      </div>
-
-      <div>
-        <label htmlFor="endereco" className="block text-gray-700">Endereço</label>
-        <input type="text" id="endereco" value={formData.endereco} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="numero" className="block text-gray-700">Número</label>
-          <input type="text" id="numero" value={formData.numero} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-        </div>
-        <div>
-          <label htmlFor="bairro" className="block text-gray-700">Bairro</label>
-          <input type="text" id="bairro" value={formData.bairro} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="cidade" className="block text-gray-700">Cidade</label>
-          <input type="text" id="cidade" value={formData.cidade} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-        </div>
-        <div>
-          <label htmlFor="estado" className="block text-gray-700">Estado</label>
-          <input type="text" id="estado" value={formData.estado} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-gray-700">Telefones</label>
-        <div className="grid grid-cols-3 gap-4">
-          <input type="text" id="celular1" placeholder="Celular 1" value={formData.celular1} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-          <input type="text" id="celular2" placeholder="Celular 2" value={formData.celular2} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-          <input type="text" id="celular3" placeholder="Celular 3" value={formData.celular3} onChange={handleChange} className="w-full border border-gray-300 text-gray-900 p-3 rounded-lg" />
-        </div>
-      </div>
+      
+      {Object.keys(formData).map((key) => {
+        if (key === "id" || key === "userAdmId") return null;
+        return (
+          <input
+            key={key}
+            type="text"
+            name={key}
+            className="text-slate-900"
+            value={formData[key as keyof AlunoData] ?? ""}
+            onChange={handleChange}
+            placeholder={key}
+          />
+        );
+      })}
 
       <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600">
         Atualizar Cadastro

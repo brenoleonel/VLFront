@@ -21,10 +21,10 @@ export default function RootLayout({
     <html lang="pt-br" className={roboto.className}>
       <body>
         {children}
+        <footer>
+          <p className="text-center text-gray-200">© 2025 Breno Leonel - Todos os direitos reservados</p>
+        </footer>
       </body>
-      <footer>
-      <p className="text-center text-gray-200">© 2025 Breno Leonel - Todos os direitos reservados</p>
-      </footer>
     </html>
   );
 }

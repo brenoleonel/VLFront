@@ -25,30 +25,36 @@ async function apiRequest<T>(
     };
 
     if (method !== "GET" && data) {
-      console.log("Dados enviados:", data);
       config.body = JSON.stringify(data);
     }
 
     const response = await fetch(`${BASE_URL}${endpoint}`, config);
-    console.log("Resposta da API:", response);
+
+    const jsonResponse = await response.json();
 
     if (!response.ok) {
-      const errorResponse = await response.json();
-      console.error("Erro detalhado:", errorResponse);
+      console.error("Erro na requisição:", jsonResponse);
       throw new Error(`Erro na requisição: ${response.status}`);
     }
 
-    return await response.json();
+    return { data: jsonResponse } as ApiResponse<T>;
   } catch (error) {
-    console.error("Erro na API:", error);
+    console.error("rro na API:", error);
     throw error;
   }
 }
 
 
 export const api = {
-  get: <T>(endpoint: string) => apiRequest<T>(endpoint, "GET"),
-  post: <T>(endpoint: string, data: unknown) => apiRequest<T>(endpoint, "POST", data),
-  put: <T>(endpoint: string, data: unknown) => apiRequest<T>(endpoint, "PUT", data),
-  delete: <T>(endpoint: string) => apiRequest<T>(endpoint, "DELETE"), 
-}
+  get: <T>(endpoint: string, headers: Record<string, string> = {}) =>
+    apiRequest<T>(endpoint, "GET", undefined, headers),
+
+  post: <T>(endpoint: string, data: unknown, headers: Record<string, string> = {}) =>
+    apiRequest<T>(endpoint, "POST", data, headers),
+
+  put: <T>(endpoint: string, data: unknown, headers: Record<string, string> = {}) =>
+    apiRequest<T>(endpoint, "PUT", data, headers),
+
+  delete: <T>(endpoint: string, headers: Record<string, string> = {}) =>
+    apiRequest<T>(endpoint, "DELETE", undefined, headers),
+};
