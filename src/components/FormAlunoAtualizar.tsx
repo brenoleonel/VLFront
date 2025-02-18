@@ -2,26 +2,8 @@
 import { api } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import AlunoData from "@/app/Interfaces/AlunoData";
 
-interface AlunoData {
-  id: string;
-  Escola: string;
-  Curso: string;
-  Nome: string;
-  Cpf: string;
-  Email: string;
-  Endereco: string;
-  Numero: string;
-  Bairro: string;
-  Cidade: string;
-  Estado: string;
-  Celular1: string;
-  Celular2: string;
-  Celular3: string;
-  userAdmId: string;
-  PublicId?: string;
-  createdAt?: string;
-}
 
 interface FormAlunoAtualizarProps {
   alunoId: string;
@@ -63,7 +45,7 @@ export default function FormAlunoAtualizar({ alunoId, onClose  }: FormAlunoAtual
                 .slice(0, 15);
   };
 
-  const router = useRouter(); // 🚀 Criando a instância do router
+  const router = useRouter();
 
   useEffect(() => {
     const fetchAluno = async () => {

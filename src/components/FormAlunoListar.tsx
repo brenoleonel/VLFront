@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/utils/api";
-import { jwtDecode, JwtPayload } from "jwt-decode";
 import Image from "next/image";
 import FormAlunoAtualizar from "./FormAlunoAtualizar";
+import { baixarPdfAluno } from '@/utils/apiPdf';
 
 interface Aluno {
   id: string;
@@ -12,7 +12,6 @@ interface Aluno {
 }
 
 export default function ListaAlunos() {
-  const [userAdmId, setUserAdmId] = useState("");
   const [Alunos, setAluno] = useState<Aluno[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [alunoSelecionado, setAlunoSelecionado] = useState<Aluno | null>(null);
@@ -49,6 +48,10 @@ export default function ListaAlunos() {
     }
   };
 
+  const handleReload = () => {
+    buscarAlunos();
+  };
+
   const handleEdit = (aluno: Aluno) => {
     setAlunoSelecionado(aluno);
     setIsModalOpen(true);
@@ -57,6 +60,10 @@ export default function ListaAlunos() {
   const handleLogout = () => {
     sessionStorage.removeItem("token");
     router.push("/Login");
+  };
+
+  const handleDownloadPdf = async (alunoId: string) => {
+    await baixarPdfAluno(alunoId);
   };
 
   return (
@@ -79,12 +86,18 @@ export default function ListaAlunos() {
           />
         </div>
 
-        <div className="text-center">
+        <div className="flex flex-row text-center">
           <button
             onClick={() => router.push("/Cadastro/Cadastrar")}
-            className="flex items-center gap-2 border-1 bg-slate-950 bg-opacity-50 transition"
+            className="flex items-center gap-2 bg-opacity-50 transition"
           >
             <img src="/adicionar.png" alt="Adicionar" width={30} height={30} /> 
+          </button>
+          <button
+            onClick={handleReload}
+            className="flex items-center gap-2 bg-opacity-50 transition"
+          >
+            <img src="/atualizar.png" alt="atualizar" width={30} height={30} /> 
           </button>
         </div>
 
@@ -96,6 +109,9 @@ export default function ListaAlunos() {
             >
               <span className="text-gray-800">{aluno.Nome}</span>
               <div className="flex space-x-3">
+                <button onClick={() => handleDownloadPdf(aluno.id)}>
+                  <img src="/pdf.png" alt="Editar" width={20} height={20} />
+                </button>
                 <button onClick={() => handleEdit(aluno)}>
                   <img src="/editar.png" alt="Editar" width={20} height={20} />
                 </button>

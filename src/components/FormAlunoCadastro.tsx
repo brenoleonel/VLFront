@@ -54,7 +54,19 @@ export default function FormAluno() {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
+    if (!Escola) return alert("Campo Escola vazio");
+    if (!Curso) return alert("Campo Curso vazio");
+    if (!Nome) return alert("Campo Nome vazio");
+    if (!Cpf) return alert("Campo CPF vazio");
+    if (!Email) return alert("Campo EMAIL vazio");
+    if (!Endereco) return alert("Campo Endereco vazio");
+    if (!Numero) return alert("Campo Numero Vazio");
+    if (!Bairro) return alert("Campo Bairro vazio");
+    if (!Cidade) return alert("Campo Cidade vazio");
+    if (!Estado) return alert("Campo Estado vazio");
+    if (!Celular1) return alert("Campo Celular vazio");
+  
     try {
       await api.post("/alunos", {
         Escola,
@@ -72,15 +84,21 @@ export default function FormAluno() {
         Celular3,
         userAdmId,
       });
-
+  
       alert("Aluno cadastrado com sucesso!");
       router.push("/Cadastro/Listar");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao cadastrar aluno:", error);
-      alert("Erro ao cadastrar aluno. Tente novamente.");
+      
+      if (error.response) {
+        console.error("Detalhes do erro:", error.response.data);
+        alert(`Erro: ${JSON.stringify(error.response.data)}`);
+      } else {
+        alert("Erro ao cadastrar aluno. Tente novamente.");
+      }
     }
+    
   };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-5 bg-white p-6 rounded-lg shadow-lg max-w-xl mx-auto">
       <h2 className="text-2xl font-bold text-slate-950 text-center mb-4">Cadastro de Aluno</h2>
